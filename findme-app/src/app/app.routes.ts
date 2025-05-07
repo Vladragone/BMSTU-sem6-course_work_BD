@@ -1,0 +1,16 @@
+import { Routes } from '@angular/router';
+import { StartComponent } from './pages/start/start.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { LoginComponent } from './pages/login/login.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { RatingComponent } from './pages/rating/rating.component';
+import { GameSettingsComponent } from './pages/game-settings/game-settings.component';
+
+export const routes: Routes = [
+  { path: '', component: StartComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'rating', component: RatingComponent},
+  { path: 'game-settings', component: GameSettingsComponent}
+];

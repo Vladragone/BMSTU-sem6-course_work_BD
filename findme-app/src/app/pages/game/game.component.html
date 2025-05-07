@@ -1,0 +1,11 @@
+<div class="game-wrapper">
+    <div id="game" class="game"></div>
+    <div id="mini-map-container" class="mini-map-container">
+      <div id="mini-map" class="mini-map"></div>
+      <button class="confirm-button" (click)="confirmMiniMap()" [disabled]="!confirmEnabled">
+        Подтвердить
+      </button>
+    </div>
+    <div *ngIf="errorMsg" class="error-message">{{ errorMsg }}</div>
+  </div>
+  
