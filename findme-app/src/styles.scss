@@ -10,3 +10,11 @@ html, body {
     font-family: 'Arial', sans-serif;
     overflow: hidden;
   }
+
+  .warn-snackbar {
+    background-color: #f44336 !important;
+    color: white !important;
+    font-weight: 500;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }

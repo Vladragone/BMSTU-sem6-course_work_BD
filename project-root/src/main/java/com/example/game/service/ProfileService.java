@@ -27,6 +27,7 @@ public class ProfileService implements IProfileService {
             Profile profile = optionalProfile.get();
             Integer additionalScore = scoreMap.getOrDefault("score", 0);
             profile.setScore(profile.getScore() + additionalScore);
+            profile.setGameNum(profile.getGameNum() + 1);
             profileRepository.save(profile);
             return Map.of("totalScore", profile.getScore());
         }

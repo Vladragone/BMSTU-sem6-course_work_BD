@@ -1,60 +1,110 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { gameService, gameQuestion, gameAnswerResponse } from '../../services/game.service';
+import { ActivatedRoute } from '@angular/router';
+import { GameService, GameLocation } from '../../services/game.service';
+import { Router } from '@angular/router';
+declare const ymaps: any;
 
 @Component({
   selector: 'app-game',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class gameComponent implements OnInit {
-  question!: gameQuestion;
-  answerForm!: FormGroup;
-  feedback!: string;
-  confirmEnabled: boolean = true;
-  errorMsg: string = '';
+export class GameComponent implements OnInit {
+  trueLat!: number;
+  trueLng!: number;
+  userGuessLat?: number;
+  userGuessLng?: number;
+  guessMap: any;
+  guessPlacemark: any;
 
   constructor(
-    private gameService: gameService,
-    private fb: FormBuilder
+    private route: ActivatedRoute,
+    private gameService: GameService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadQuestion();
-    this.answerForm = this.fb.group({
-      answer: ['', Validators.required]
-    });
-  }
-
-  loadQuestion(): void {
-    this.gameService.getQuestion().subscribe({
-      next: (q) => this.question = q,
-      error: (err) => {
-        console.error('Ошибка загрузки вопроса:', err);
-        this.errorMsg = 'Ошибка загрузки вопроса';
-      }
-    });
-  }
-
-  submitAnswer(): void {
-    if (this.answerForm.valid && this.question) {
-      const answer = this.answerForm.value.answer;
-      this.gameService.submitAnswer(this.question.id, answer).subscribe({
-        next: (response: gameAnswerResponse) => {
-          this.feedback = response.message;
+    const name = this.route.snapshot.queryParamMap.get('name');
+    if (name) {
+      this.gameService.getRandomLocation(name).subscribe({
+        next: (location: GameLocation) => {
+          this.trueLat = location.lat;
+          this.trueLng = location.lng;
+          this.loadPanorama(location.lat, location.lng);
+          this.loadMap();
         },
-        error: (err) => {
-          console.error('Ошибка отправки ответа:', err);
-          this.errorMsg = 'Ошибка отправки ответа';
+        error: err => {
+          console.error('Ошибка загрузки локации:', err);
         }
       });
     }
   }
 
-  confirmMiniMap(): void {
-    console.log('Mini map confirmed');
+  private loadPanorama(lat: number, lng: number): void {
+    const waitForYMaps = () => {
+      if (typeof ymaps === 'undefined') {
+        setTimeout(waitForYMaps, 100);
+      } else {
+        ymaps.ready(() => {
+          ymaps.panorama.locate([lat, lng]).done((panoramas: any[]) => {
+            if (panoramas.length > 0) {
+              new ymaps.panorama.Player('panorama', panoramas[0], {
+                direction: [0, 0],
+                span: [90, 45]
+              });
+            } else {
+              alert('Панорама не найдена для этой локации.');
+            }
+          });
+        });
+      }
+    };
+
+    waitForYMaps();
   }
+
+  private loadMap(): void {
+    const waitForYMaps = () => {
+      if (typeof ymaps === 'undefined') {
+        setTimeout(waitForYMaps, 100);
+      } else {
+        ymaps.ready(() => {
+          this.guessMap = new ymaps.Map('guess-map', {
+            center: [55.75, 37.62],
+            zoom: 3,
+            controls: ['zoomControl']
+          });
+
+          this.guessMap.events.add('click', (e: any) => {
+            const coords = e.get('coords');
+            this.userGuessLat = coords[0];
+            this.userGuessLng = coords[1];
+
+            if (this.guessPlacemark) {
+              this.guessPlacemark.geometry.setCoordinates(coords);
+            } else {
+              this.guessPlacemark = new ymaps.Placemark(coords, {}, {
+                preset: 'islands#redIcon'
+              });
+              this.guessMap.geoObjects.add(this.guessPlacemark);
+            }
+          });
+        });
+      }
+    };
+
+    waitForYMaps();
+  }
+
+  onFind(): void {
+    this.router.navigate(['/game-result'], {
+      queryParams: {
+        trueLat: this.trueLat,
+        trueLng: this.trueLng,
+        userGuessLat: this.userGuessLat,
+        userGuessLng: this.userGuessLng
+      }
+    });
+  }
+  
 }

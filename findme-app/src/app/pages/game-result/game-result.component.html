@@ -1,0 +1,12 @@
+<div id="guess-map" style="height: 100%; width: 100%;"></div>
+
+<div class="game-result-container">
+  <div class="game-result">
+    <p>Исходная точка: {{ trueLat | number: '1.6-6' }}, {{ trueLng | number: '1.6-6' }}</p>
+    <p>Точка пользователя: {{ userGuessLat | number: '1.6-6' }}, {{ userGuessLng | number: '1.6-6' }}</p>
+    <p>Результат: {{ score | number: '1.0-0' }} очков</p>
+    <p>Промах на: {{ distance | number: '1.2-2' }} км</p>
+    <button (click)="onPlayAgain()">Играть еще раз</button>
+    <button (click)="onProfile()">Профиль</button>
+  </div>
+</div>

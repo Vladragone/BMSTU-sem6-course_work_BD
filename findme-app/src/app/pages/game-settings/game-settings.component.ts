@@ -12,6 +12,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import { GameService } from '../../services/game.service';
 
 @Component({
   selector: 'app-game-settings',
@@ -37,7 +38,7 @@ export class GameSettingsComponent implements OnInit {
   lat: number | null = null;
   lng: number | null = null;
   name: string = '';
-  constructor(private snackBar: MatSnackBar, private router: Router) {}
+  constructor(private snackBar: MatSnackBar, private router: Router, private gameService: GameService) {}
 
   private locationService = inject(LocationService);
 
@@ -92,7 +93,16 @@ export class GameSettingsComponent implements OnInit {
   }
 
   startGame(): void {
-    this.router.navigate(['/game']);
+    if (this.selectedLocation) {
+      this.router.navigate(['/game'], {
+        queryParams: { name: this.selectedLocation }
+      });
+    } else {
+      this.snackBar.open('Выберите локацию для начала игры', 'Закрыть', {
+        duration: 3000,
+        panelClass: ['warn-snackbar']
+      });
+    }
   }
   
   goBack(): void {
