@@ -30,7 +30,6 @@ public class AuthService implements IAuthService {
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     @Override
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
@@ -43,7 +42,7 @@ public class AuthService implements IAuthService {
             logger.debug("Inputed Hash: {}", hashedInputPassword);
 
             if (user.getPassword().equals(hashedInputPassword)) {
-                String token = JwtUtil.generateToken(user.getUsername(), user.getRole());
+                String token = JwtUtil.generateToken(user.getUsername(), user.getRole(), user.getId());
                 Map<String, Object> response = new HashMap<>();
                 response.put("message", "Авторизация успешна");
                 response.put("token", token);
@@ -55,6 +54,7 @@ public class AuthService implements IAuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Пользователь не найден");
         }
     }
+
 
     String hashPassword(String password) {
         try {

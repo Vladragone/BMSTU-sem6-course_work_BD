@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DecimalPipe } from '@angular/common';
 import { GameResultService } from '../../services/game-result.service';
+import { HttpClientModule } from '@angular/common/http';
+
 declare const ymaps: any;
 
 @Component({
@@ -10,7 +12,7 @@ declare const ymaps: any;
   templateUrl: './game-result.component.html',
   styleUrls: ['./game-result.component.scss'],
   standalone: true,
-  imports: [CommonModule, DecimalPipe]
+  imports: [CommonModule, DecimalPipe, HttpClientModule]
 })
 export class GameResultComponent implements OnInit {
   trueLat!: number;
@@ -23,6 +25,7 @@ export class GameResultComponent implements OnInit {
   originPlacemark: any;
   guessPlacemark: any;
   line: any;
+  userId!: number;
 
   constructor(private route: ActivatedRoute, private router: Router, private gameResultService: GameResultService) {}
 
@@ -32,13 +35,30 @@ export class GameResultComponent implements OnInit {
       this.trueLng = +params['trueLng'];
       this.userGuessLat = +params['userGuessLat'];
       this.userGuessLng = +params['userGuessLng'];
-
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.userId = this.getUserIdFromToken(token);
+      }
       if (this.trueLat && this.trueLng && this.userGuessLat && this.userGuessLng) {
         this.calculateScore();
         this.loadMap();
       }
     });
-    
+  }
+
+  private getUserIdFromToken(token: string): number {
+    const payload = this.decodeJWT(token);
+    return payload.user_id; // Имя поля в payload может быть разным, у вас может быть 'userId' или 'id'
+  }
+
+  private decodeJWT(token: string): any {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid token format');
+    }
+    const payload = parts[1];
+    const decodedPayload = atob(payload);
+    return JSON.parse(decodedPayload);
   }
 
   private loadMap(): void {
@@ -104,7 +124,7 @@ export class GameResultComponent implements OnInit {
     this.distance = distanceInKm;
     this.score = Math.max(0, Math.round(5000 - (distanceInKm * 1000)));
     this.gameResultService.updateScore(this.score)?.subscribe();
-
+    this.gameResultService.saveGame(this.userId, this.userGuessLat, this.userGuessLng, this.trueLat, this.trueLng, this.score)?.subscribe();
   }
 
   private degreesToRadians(degrees: number): number {
