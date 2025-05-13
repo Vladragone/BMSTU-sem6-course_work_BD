@@ -3,13 +3,13 @@ package com.example.game.service;
 import com.example.game.dto.LoginRequest;
 import com.example.game.model.User;
 import com.example.game.repository.UserRepository;
-import com.example.game.service.interfaces.IAuthService;
 import com.example.game.util.JwtUtil;
+import com.example.game.service.interfaces.IAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,19 +17,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class AuthService implements IAuthService {
 
     private final UserRepository userRepository;
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     @Override
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
@@ -38,23 +35,19 @@ public class AuthService implements IAuthService {
             User user = userOptional.get();
             String hashedInputPassword = hashPassword(loginRequest.getPassword());
 
-            logger.debug("Waited Hash: {}", user.getPassword());
-            logger.debug("Inputed Hash: {}", hashedInputPassword);
-
             if (user.getPassword().equals(hashedInputPassword)) {
                 String token = JwtUtil.generateToken(user.getUsername(), user.getRole(), user.getId());
                 Map<String, Object> response = new HashMap<>();
-                response.put("message", "Авторизация успешна");
+                response.put("message", "Authentication successful");
                 response.put("token", token);
                 return ResponseEntity.ok(response);
             } else {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Неверный пароль");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
             }
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Пользователь не найден");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
         }
     }
-
 
     String hashPassword(String password) {
         try {
@@ -66,7 +59,7 @@ public class AuthService implements IAuthService {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Ошибка при хэшировании пароля", e);
+            throw new RuntimeException("Error hashing password", e);
         }
     }
 }

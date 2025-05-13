@@ -14,8 +14,8 @@ public class User {
     private String email;
     private String password;
     @Column(nullable = false)
-    private String role = "user"; // По умолчанию роль "user"
-    // Геттеры и сеттеры
+    private String role = "user";
+
     public Long getId() {
         return id;
     }

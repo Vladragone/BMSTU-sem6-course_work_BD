@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
-    Optional<Profile> findByUserUsername(String username); // для ProfileService
-    List<Profile> findTop10ByOrderByScoreDesc(); // для RatingService
+    Optional<Profile> findByUserUsername(String username);
+    List<Profile> findTop10ByOrderByScoreDesc();
 }

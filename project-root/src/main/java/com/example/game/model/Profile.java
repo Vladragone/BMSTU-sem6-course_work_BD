@@ -11,35 +11,28 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Связь один к одному с пользователем (FK из таблицы users)
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true, nullable = false)
     private User user;
 
-    // Начальный счёт 0
     @Column(nullable = false)
     private int score = 0;
 
-    // Дата регистрации (заполняется при регистрации пользователя)
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
-    // Количество сыгранных игр, по умолчанию 0
     @Column(name = "game_num", nullable = false)
     private int gameNum = 0;
 
     public Profile() {
     }
 
-    // Конструктор для создания профиля с данными пользователя и датой регистрации
     public Profile(User user, LocalDateTime regDate) {
         this.user = user;
         this.regDate = regDate;
         this.score = 0;
         this.gameNum = 0;
     }
-
-    // Геттеры и сеттеры
 
     public Long getId() {
         return id;
