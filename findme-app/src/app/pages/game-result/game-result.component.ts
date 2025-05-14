@@ -6,7 +6,6 @@ import { GameResultService } from '../../services/game-result.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 declare const ymaps: any;
 
 @Component({
@@ -29,14 +28,10 @@ export class GameResultComponent implements OnInit {
   line: any;
   userId!: number;
   selectedRating: number = 0;
-selectedIssue: string = '';
-comment: string = '';
-issues: string[] = [
-  'Неправильные координаты',
-  'Проблемы с загрузкой карты',
-  'Неточные результаты'
-];
-showIssueError: boolean = false;
+  selectedIssue: string = '';
+  comment: string = '';
+  issues: { id: number, name: string }[] = [];
+  showIssueError: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private gameResultService: GameResultService, private snackBar: MatSnackBar) {}
 
@@ -54,6 +49,10 @@ showIssueError: boolean = false;
         this.calculateScore();
         this.loadMap();
       }
+    });
+
+    this.gameResultService.getGameErrors().subscribe((data: { id: number, name: string }[]) => {
+      this.issues = data;
     });
   }
 
@@ -148,17 +147,18 @@ showIssueError: boolean = false;
       this.selectedIssue = '';
     }
   }
-  
+
   submitFeedback(): void {
     this.showIssueError = false;
-    if (!this.selectedRating) {
+
+    if (this.selectedRating === undefined || this.selectedRating === null) {
       this.snackBar.open('Пожалуйста, выберите оценку', 'Закрыть', {
         duration: 3000,
         panelClass: ['warn-snackbar']
       });
       return;
     }
-  
+
     if (this.selectedRating <= 2 && !this.selectedIssue) {
       this.showIssueError = true;
       this.snackBar.open('Пожалуйста, укажите проблему', 'Закрыть', {
@@ -167,29 +167,41 @@ showIssueError: boolean = false;
       });
       return;
     }
+    console.log('Выбранная проблема:', this.selectedIssue);
+
     const feedback = {
+      userId: this.userId,
       rating: this.selectedRating,
-      issue: this.selectedRating <= 2 ? this.selectedIssue : null,
-      comment: this.comment,
-      gameData: {
-        trueLocation: [this.trueLat, this.trueLng],
-        userGuess: [this.userGuessLat, this.userGuessLng],
-        score: this.score
-      }
+      problem: this.selectedRating <= 2 ? this.selectedIssue : null,
+      description: this.comment.length === 0 ? null : this.comment,
     };
-  
+
+
     console.log('Отправка отзыва:', feedback);
-    this.snackBar.open('Спасибо за ваш отзыв!', 'Закрыть', {
-      duration: 3000,
-      panelClass: ['snackbar-success']
+
+    this.gameResultService.sendFeedback(feedback).subscribe({
+      next: () => {
+        this.snackBar.open('Спасибо за ваш отзыв!', 'Закрыть', {
+          duration: 2000,
+          panelClass: ['snackbar-success']
+        });
+        this.onProfile();
+      },
+      error: (err) => {
+        this.snackBar.open('Ошибка при отправке отзыва', 'Закрыть', {
+          duration: 3000,
+          panelClass: ['snackbar-error']
+        });
+        console.error('Ошибка отправки отзыва:', err);
+      }
     });
-  
-    // Сброс формы
+
     this.selectedRating = 0;
     this.selectedIssue = '';
     this.comment = '';
   }
-  
+
+
 
   onPlayAgain(): void {
     this.router.navigate(['/game-settings']);

@@ -14,7 +14,6 @@ public class RatingResponse {
         this.sortBy = sortBy;
     }
     
-    // Геттеры
     public List<Profile> getTop() { return top; }
     public int getYourRank() { return yourRank; }
     public String getSortBy() { return sortBy; }
