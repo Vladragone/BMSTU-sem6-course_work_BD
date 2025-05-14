@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { GameService } from '../../services/game.service';
+declare const ymaps: any;
 
 @Component({
   selector: 'app-game-settings',
@@ -63,30 +64,66 @@ export class GameSettingsComponent implements OnInit {
   }
 
   addLocation(): void {
-    if (this.lat && this.lng && this.name) {
-      const newLocation = {
-        lat: this.lat,
-        lng: this.lng,
-        name: this.name
+    if (this.lat !== null && this.lng !== null && this.name) {
+      const coords: [number, number] = [this.lat, this.lng];
+      
+      const waitForYMaps = () => {
+        if (typeof ymaps === 'undefined') {
+          setTimeout(waitForYMaps, 100);
+        } else {
+          ymaps.ready(() => {
+            ymaps.panorama.locate(coords).done((panoramas: any[]) => {
+              if (panoramas.length > 0) {
+                const newLocation = {
+                  lat: this.lat!,
+                  lng: this.lng!,
+                  name: this.name
+                };
+                
+                this.locationService.addLocation(newLocation).subscribe({
+                  next: response => {
+                    console.log('Локация успешно добавлена:', response);
+                    this.snackBar.open('Локация успешно добавлена', 'Закрыть', {
+                      duration: 3000,
+                      panelClass: ['snackbar-success']
+                    });
+                    
+                    this.locationService.getLocationNames().subscribe({
+                      next: data => this.locations = data
+                    });
+                    
+                    this.lat = null;
+                    this.lng = null;
+                    this.name = '';
+                  },
+                  error: err => {
+                    console.error('Ошибка при добавлении локации:', err);
+                    this.snackBar.open('Ошибка при добавлении локации', 'Закрыть', {
+                      duration: 3000,
+                      panelClass: ['warn-snackbar']
+                    });
+                  }
+                });
+              } else {
+                this.snackBar.open('Панорама не найдена для указанных координат', 'Закрыть', {
+                  duration: 3000,
+                  panelClass: ['warn-snackbar']
+                });
+              }
+            }).fail(() => {
+              this.snackBar.open('Ошибка при проверке панорамы', 'Закрыть', {
+                duration: 3000,
+                panelClass: ['warn-snackbar']
+              });
+            });
+          });
+        }
       };
   
-      this.locationService.addLocation(newLocation).subscribe({
-        next: response => {
-          console.log('Локация успешно добавлена:', response);
-          this.locationService.getLocationNames().subscribe({
-            next: data => this.locations = data
-          });
-          this.lat = null;
-          this.lng = null;
-          this.name = '';
-        },
-        error: err => {
-          console.error('Ошибка при добавлении локации:', err);
-        }
-      });
+      waitForYMaps();
     } else {
       this.snackBar.open('Все поля обязательны для заполнения', 'Закрыть', {
-        duration: 30000,
+        duration: 3000, 
         panelClass: ['warn-snackbar']
       });
     }

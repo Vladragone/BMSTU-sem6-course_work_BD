@@ -8,5 +8,28 @@
     <p>Промах на: {{ distance | number: '1.2-2' }} км</p>
     <button (click)="onPlayAgain()">Играть еще раз</button>
     <button (click)="onProfile()">Профиль</button>
+    
+    <div class="feedback-form">
+      <h3>Форма обратной связи</h3>
+      <div class="rating">
+        <span *ngFor="let star of [1,2,3,4,5]" 
+              (click)="setRating(star)"
+              [class.active]="star <= selectedRating">★</span>
+      </div>
+      
+      <div class="feedback-details" *ngIf="selectedRating && selectedRating <= 2">
+        <p>Что пошло не так? <span class="required">*</span></p>
+        <select [(ngModel)]="selectedIssue" required>
+          <option value="" disabled selected>Выберите проблему</option>
+          <option *ngFor="let issue of issues" [value]="issue">{{issue}}</option>
+        </select>
+        <p class="error-message" *ngIf="showIssueError">Пожалуйста, выберите проблему</p>
+      </div>
+      
+      <div class="comment-section">
+        <textarea [(ngModel)]="comment" placeholder="Ваш комментарий (необязательно)"></textarea>
+        <button (click)="submitFeedback()" [disabled]="!selectedRating">Отправить отзыв</button>
+      </div>
+    </div>
   </div>
 </div>

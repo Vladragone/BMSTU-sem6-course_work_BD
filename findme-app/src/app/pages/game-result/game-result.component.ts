@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { DecimalPipe } from '@angular/common';
 import { GameResultService } from '../../services/game-result.service';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 declare const ymaps: any;
 
@@ -12,7 +14,7 @@ declare const ymaps: any;
   templateUrl: './game-result.component.html',
   styleUrls: ['./game-result.component.scss'],
   standalone: true,
-  imports: [CommonModule, DecimalPipe, HttpClientModule]
+  imports: [CommonModule, DecimalPipe, HttpClientModule, FormsModule]
 })
 export class GameResultComponent implements OnInit {
   trueLat!: number;
@@ -26,8 +28,17 @@ export class GameResultComponent implements OnInit {
   guessPlacemark: any;
   line: any;
   userId!: number;
+  selectedRating: number = 0;
+selectedIssue: string = '';
+comment: string = '';
+issues: string[] = [
+  'Неправильные координаты',
+  'Проблемы с загрузкой карты',
+  'Неточные результаты'
+];
+showIssueError: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private gameResultService: GameResultService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private gameResultService: GameResultService, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -48,7 +59,7 @@ export class GameResultComponent implements OnInit {
 
   private getUserIdFromToken(token: string): number {
     const payload = this.decodeJWT(token);
-    return payload.user_id; // Имя поля в payload может быть разным, у вас может быть 'userId' или 'id'
+    return payload.user_id;
   }
 
   private decodeJWT(token: string): any {
@@ -130,6 +141,55 @@ export class GameResultComponent implements OnInit {
   private degreesToRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
   }
+
+  setRating(rating: number): void {
+    this.selectedRating = rating;
+    if (rating > 2) {
+      this.selectedIssue = '';
+    }
+  }
+  
+  submitFeedback(): void {
+    this.showIssueError = false;
+    if (!this.selectedRating) {
+      this.snackBar.open('Пожалуйста, выберите оценку', 'Закрыть', {
+        duration: 3000,
+        panelClass: ['warn-snackbar']
+      });
+      return;
+    }
+  
+    if (this.selectedRating <= 2 && !this.selectedIssue) {
+      this.showIssueError = true;
+      this.snackBar.open('Пожалуйста, укажите проблему', 'Закрыть', {
+        duration: 3000,
+        panelClass: ['warn-snackbar']
+      });
+      return;
+    }
+    const feedback = {
+      rating: this.selectedRating,
+      issue: this.selectedRating <= 2 ? this.selectedIssue : null,
+      comment: this.comment,
+      gameData: {
+        trueLocation: [this.trueLat, this.trueLng],
+        userGuess: [this.userGuessLat, this.userGuessLng],
+        score: this.score
+      }
+    };
+  
+    console.log('Отправка отзыва:', feedback);
+    this.snackBar.open('Спасибо за ваш отзыв!', 'Закрыть', {
+      duration: 3000,
+      panelClass: ['snackbar-success']
+    });
+  
+    // Сброс формы
+    this.selectedRating = 0;
+    this.selectedIssue = '';
+    this.comment = '';
+  }
+  
 
   onPlayAgain(): void {
     this.router.navigate(['/game-settings']);
