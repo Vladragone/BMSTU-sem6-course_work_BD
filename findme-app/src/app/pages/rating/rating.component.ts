@@ -43,4 +43,14 @@ export class RatingComponent implements OnInit {
     localStorage.removeItem('token');
     this.router.navigate(['/']);
   }
+
+  changeImg(): void {
+    const body = document.body;
+    const current = body.style.backgroundImage;
+    if (current.includes('world.png')) {
+      body.style.backgroundImage = "url('/assets/saxur.png')";
+    } else {
+      body.style.backgroundImage = "url('/assets/world.png')";
+    }
+  }
 }

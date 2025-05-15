@@ -152,3 +152,24 @@
     }
   }
   
+.help-button {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  font-size: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: background-color 0.2s ease;
+}
+
+.help-button:hover {
+  background-color: #0056b3;
+}
