@@ -20,4 +20,8 @@ export class StartComponent {
   onStartGame(): void {
     this.router.navigate(['/game-settings']);
   }
+
+  onAbout(): void {
+    this.router.navigate(['/faq']);
+  }
 }

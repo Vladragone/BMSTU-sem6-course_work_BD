@@ -7,6 +7,7 @@ import { RatingComponent } from './pages/rating/rating.component';
 import { GameSettingsComponent } from './pages/game-settings/game-settings.component';
 import { GameComponent } from './pages/game/game.component';
 import { GameResultComponent } from './pages/game-result/game-result.component';
+import { FaqComponent } from './pages/faq/faq.component';
 
 export const routes: Routes = [
   { path: '', component: StartComponent },
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'rating', component: RatingComponent},
   { path: 'game-settings', component: GameSettingsComponent},
   { path: 'game', component: GameComponent},
-  { path: 'game-result', component: GameResultComponent}
+  { path: 'game-result', component: GameResultComponent},
+  { path: 'faq', component: FaqComponent },
 ];
