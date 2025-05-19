@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface IFaqService {
     List<Faq> getAllFaqs();
+    Faq saveFaq(Faq faq);
 }

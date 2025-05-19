@@ -9,5 +9,13 @@
     </mat-expansion-panel>
   </mat-accordion>
 
+  <div *ngIf="role === 'admin'" class="admin-add-form">
+    <h3>Добавить вопрос</h3>
+    <input [(ngModel)]="newQuestion" placeholder="Вопрос" />
+    <textarea [(ngModel)]="newAnswer" placeholder="Ответ"></textarea>
+    <button (click)="addFaq()">Добавить</button>
+  </div>
+
+
   <button class="back-btn" (click)="onBack()">Назад</button>
 </div>

@@ -39,4 +39,8 @@ export class ProfileComponent implements OnInit {
     localStorage.removeItem('token');
     this.router.navigate(['/']);
   }
+
+  goToFaq(): void {
+    this.router.navigate(['/faq']);
+  }
 }

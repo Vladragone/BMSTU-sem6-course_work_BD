@@ -16,12 +16,15 @@ public class Faq {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String answer;
 
-    public Faq() {
-    }
+    @Column(name = "userId")
+    private Long userId;
 
-    public Faq(String question, String answer) {
+    public Faq() {}
+
+    public Faq(String question, String answer, Long userId) {
         this.question = question;
         this.answer = answer;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -46,5 +49,13 @@ public class Faq {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -38,3 +38,47 @@
     }
   }
 }
+
+.admin-add-form {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px solid #ccc;
+
+  h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #444;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  button {
+    padding: 10px 30px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #1769aa;
+    }
+  }
+}

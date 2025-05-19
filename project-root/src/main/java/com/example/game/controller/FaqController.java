@@ -20,4 +20,9 @@ public class FaqController {
     public List<Faq> getAllFaqs() {
         return faqService.getAllFaqs();
     }
+
+    @PostMapping
+    public Faq createFaq(@RequestBody Faq faq) {
+        return faqService.saveFaq(faq);
+    }
 }

@@ -20,4 +20,9 @@ public class FaqService implements IFaqService {
     public List<Faq> getAllFaqs() {
         return faqRepository.findAll();
     }
+
+    @Override
+    public Faq saveFaq(Faq faq) {
+        return faqRepository.save(faq);
+    }
 }
