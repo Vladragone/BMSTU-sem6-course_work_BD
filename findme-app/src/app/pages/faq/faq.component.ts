@@ -1,4 +1,3 @@
-// faq.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FaqService, Faq } from '../../services/faq.service';
 import { MatExpansionModule } from '@angular/material/expansion';

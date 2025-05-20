@@ -2,12 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GameService, GameLocation } from '../../services/game.service';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+import { CommonModule } from '@angular/common';
 declare const ymaps: any;
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.scss']
+  styleUrls: ['./game.component.scss'],
+  imports: [CommonModule]
 })
 export class GameComponent implements OnInit {
   trueLat!: number;
@@ -16,6 +19,7 @@ export class GameComponent implements OnInit {
   userGuessLng?: number;
   guessMap: any;
   guessPlacemark: any;
+  role: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -24,6 +28,15 @@ export class GameComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const jwtToken = localStorage.getItem('token');
+    if (jwtToken) {
+      try {
+        const decoded: any = jwtDecode(jwtToken);
+        this.role = decoded?.role || '';
+      } catch (error) {
+        console.error('Ошибка декодирования JWT:', error);
+      }
+    }
     const name = this.route.snapshot.queryParamMap.get('name');
     if (name) {
       this.gameService.getRandomLocation(name).subscribe({
@@ -107,4 +120,7 @@ export class GameComponent implements OnInit {
     });
   }
   
+  onStressTest(): void {
+    this.router.navigate(['/stress']);
+  }
 }
