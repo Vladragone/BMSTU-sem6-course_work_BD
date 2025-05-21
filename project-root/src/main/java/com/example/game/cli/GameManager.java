@@ -5,11 +5,13 @@ import com.example.game.model.Location;
 import com.example.game.model.User;
 import com.example.game.service.GameSessionService;
 import com.example.game.service.LocationService;
+import com.example.game.service.ProfileService;
 import com.example.game.service.UserService;
 import com.example.game.service.interfaces.ITokenParser;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 @Component
@@ -20,18 +22,21 @@ public class GameManager {
     private final AuthManager authManager;
     private final ITokenParser tokenParser;
     private final UserService userService;
+    private final ProfileService profileService;
     private final Scanner scanner;
 
     public GameManager(LocationService locationService,
                        GameSessionService gameSessionService,
                        AuthManager authManager,
                        ITokenParser tokenParser,
-                       UserService userService) {
+                       UserService userService,
+                       ProfileService profileService) {
         this.locationService = locationService;
         this.gameSessionService = gameSessionService;
         this.authManager = authManager;
         this.tokenParser = tokenParser;
         this.userService = userService;
+        this.profileService = profileService;
         this.scanner = new Scanner(System.in);
     }
 
@@ -95,7 +100,7 @@ public class GameManager {
 
         Long userId = getUserIdFromToken();
         if (userId == null) {
-            System.out.println("Не удалось определить пользователя. Сначала залогиньтесь.");
+            System.out.println("No account");
             return;
         }
 
@@ -108,6 +113,16 @@ public class GameManager {
         gameSession.setEarnedScore(0);
 
         gameSessionService.saveGameSession(gameSession);
+
+        String token = authManager.getAuthToken();
+        if (token != null) {
+            try {
+                String username = tokenParser.getUsername(token);
+                profileService.updateScore(Map.of("score", 0), username);
+            } catch (Exception e) {
+                System.out.println("Err updating profile: " + e.getMessage());
+            }
+        }
 
         System.out.println("Game session saved!");
     }
