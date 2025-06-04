@@ -6,6 +6,8 @@ import com.example.game.service.interfaces.IGameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GameSessionService implements IGameSessionService {
 
@@ -19,5 +21,10 @@ public class GameSessionService implements IGameSessionService {
     @Override
     public GameSession saveGameSession(GameSession gameSession) {
         return gameSessionRepository.save(gameSession);
+    }
+
+    @Override
+    public List<GameSession> getLast5SessionsByUserId(Long userId) {
+        return gameSessionRepository.findTop5ByUserIdOrderByIdDesc(userId);
     }
 }

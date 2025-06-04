@@ -5,9 +5,8 @@ import com.example.game.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,8 +24,12 @@ public class ProfileRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FaqRepository faqRepository;
+
     @BeforeEach
     void clean() {
+        faqRepository.deleteAll();
         profileRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -69,12 +72,12 @@ public class ProfileRepositoryTest {
         }
 
         List<Profile> topProfiles = profileRepository.findTop10ByOrderByScoreDesc();
-
         assertThat(topProfiles).hasSize(10);
-        int previousScore = Integer.MAX_VALUE;
-        for (Profile profile : topProfiles) {
-            assertThat(profile.getScore()).isLessThanOrEqualTo(previousScore);
-            previousScore = profile.getScore();
+
+        int prev = Integer.MAX_VALUE;
+        for (Profile p : topProfiles) {
+            assertThat(p.getScore()).isLessThanOrEqualTo(prev);
+            prev = p.getScore();
         }
 
         assertThat(topProfiles.get(0).getScore()).isEqualTo(120);

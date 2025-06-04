@@ -1,9 +1,9 @@
 <div class="profile-page">
   <div *ngIf="profile" class="profile-info">
     <ul>
-      <li><strong>Дата регистрации:</strong> {{ profile?.regDate | date:'medium' }}</li>
-      <li><strong>Количество игр:</strong> {{ profile?.gameNum }}</li>
-      <li><strong>Счёт:</strong> {{ profile?.score }}</li>
+      <li><strong>Дата регистрации:</strong> {{ profile.regDate | date:'medium' }}</li>
+      <li><strong>Количество игр:</strong> {{ profile.gameNum }}</li>
+      <li><strong>Счёт:</strong> {{ profile.score }}</li>
     </ul>
   </div>
 
@@ -14,5 +14,35 @@
     <button class="rating-btn" (click)="goToRating()">Рейтинг</button>
     <button class="rating-btn" (click)="goToFaq()">О проекте</button>
     <button class="logout-btn" (click)="logout()">Выйти</button>
+  </div>
+
+  <div *ngIf="isLoadingSessions" class="sessions-list">
+    <p>Загрузка последних игр...</p>
+  </div>
+
+  <div *ngIf="!isLoadingSessions && lastSessions.length > 0" class="sessions-list">
+    <h3>Последние 5 игр</h3>
+    <table class="sessions-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Ваши координаты</th>
+          <th>Правильные координаты</th>
+          <th>Очки</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of lastSessions">
+          <td>{{ s.id }}</td>
+          <td>{{ s.userLat.toFixed(4) }}, {{ s.userLng.toFixed(4) }}</td>
+          <td>{{ s.correctLat.toFixed(4) }}, {{ s.correctLng.toFixed(4) }}</td>
+          <td>{{ s.earnedScore }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!isLoadingSessions && lastSessions.length === 0" class="sessions-list">
+    <p>У вас ещё нет сыгранных игр.</p>
   </div>
 </div>
