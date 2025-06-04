@@ -8,12 +8,14 @@ import com.example.game.service.interfaces.ITokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@ConditionalOnProperty(name = "app.database", havingValue = "postgres", matchIfMissing = true)
 public class RatingService implements IRatingService {
 
     private final ProfileRepository profileRepository;

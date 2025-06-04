@@ -5,11 +5,13 @@ import com.example.game.repository.LocationRepository;
 import com.example.game.service.interfaces.IRandomLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.List;
 import java.util.Random;
 
 @Service
+@ConditionalOnProperty(name = "app.database", havingValue = "postgres", matchIfMissing = true)
 public class RandomLocationService implements IRandomLocationService {
 
     @Autowired

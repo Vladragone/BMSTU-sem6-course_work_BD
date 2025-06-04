@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@ConditionalOnProperty(name = "app.database", havingValue = "postgres", matchIfMissing = true)
 public class AuthService implements IAuthService {
 
     private final UserRepository userRepository;
