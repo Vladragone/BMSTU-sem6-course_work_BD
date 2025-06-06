@@ -4,7 +4,6 @@ import com.example.game.model.Location;
 import com.example.game.mongo.model.LocationDocument;
 import com.example.game.mongo.repository.LocationMongoRepository;
 import com.example.game.service.interfaces.IRandomLocationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +18,22 @@ public class RandomLocationService implements IRandomLocationService {
     private final LocationMongoRepository locationMongoRepository;
     private final Random random = new Random();
 
-    @Autowired
     public RandomLocationService(LocationMongoRepository locationMongoRepository) {
         this.locationMongoRepository = locationMongoRepository;
     }
 
     @Override
-    public Location getRandomLocation() {
-        List<LocationDocument> docs = locationMongoRepository.findAll();
-        if (docs.isEmpty()) return null;
-        LocationDocument chosen = docs.get(random.nextInt(docs.size()));
-        Location loc = new Location();
-        loc.setId(Long.parseLong(chosen.getId()));
-        loc.setName(chosen.getName());
-        loc.setLat(chosen.getLat());
-        loc.setLng(chosen.getLng());
-        return loc;
+    public Location getRandomLocationByName(String name) {
+        List<LocationDocument> docs = locationMongoRepository.findByName(name);
+        if (docs.isEmpty()) {
+            return null;
+        }
+        LocationDocument doc = docs.get(random.nextInt(docs.size()));
+        Location location = new Location();
+        location.setId(doc.getId());
+        location.setName(doc.getName());
+        location.setLat(doc.getLat());
+        location.setLng(doc.getLng());
+        return location;
     }
 }

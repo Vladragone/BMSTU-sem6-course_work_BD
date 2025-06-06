@@ -5,26 +5,30 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "faq")
 public class FaqDocument {
+
     @Id
-    private String id;
+    private Long id;
+
     private String question;
     private String answer;
-    private String userId;
 
-    public FaqDocument() {}
+    private Long userId;
 
-    public FaqDocument(String id, String question, String answer, String userId) {
+    public FaqDocument() {
+    }
+
+    public FaqDocument(Long id, String question, String answer, Long userId) {
         this.id = id;
         this.question = question;
         this.answer = answer;
         this.userId = userId;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -44,11 +48,11 @@ public class FaqDocument {
         this.answer = answer;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

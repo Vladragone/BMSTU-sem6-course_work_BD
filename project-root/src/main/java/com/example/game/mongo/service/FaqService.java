@@ -4,10 +4,10 @@ import com.example.game.model.Faq;
 import com.example.game.mongo.model.FaqDocument;
 import com.example.game.mongo.repository.FaqMongoRepository;
 import com.example.game.service.interfaces.IFaqService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,53 +18,46 @@ public class FaqService implements IFaqService {
 
     private final FaqMongoRepository faqMongoRepository;
 
-    @Autowired
     public FaqService(FaqMongoRepository faqMongoRepository) {
         this.faqMongoRepository = faqMongoRepository;
     }
 
     @Override
-    public List<Faq> findAll() {
-        return faqMongoRepository.findAll()
-            .stream()
-            .map(fd -> {
-                Faq f = new Faq();
-                f.setId(Long.parseLong(fd.getId()));
-                f.setQuestion(fd.getQuestion());
-                f.setAnswer(fd.getAnswer());
-                f.setUserId(Long.parseLong(fd.getUserId()));
-                return f;
-            })
+    public List<Faq> getAllFaqs() {
+        return faqMongoRepository.findAll().stream()
+            .map(this::toFaq)
             .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Faq> findById(Long id) {
-        Optional<FaqDocument> doc = faqMongoRepository.findById(String.valueOf(id));
-        if (doc.isEmpty()) return Optional.empty();
-        FaqDocument fd = doc.get();
-        Faq f = new Faq();
-        f.setId(Long.parseLong(fd.getId()));
-        f.setQuestion(fd.getQuestion());
-        f.setAnswer(fd.getAnswer());
-        f.setUserId(Long.parseLong(fd.getUserId()));
-        return Optional.of(f);
+    public Faq saveFaq(Faq faq) {
+        if (faq.getId() == null) {
+            faq.setId(getNextId());
+        }
+        FaqDocument doc = new FaqDocument(
+            faq.getId(),
+            faq.getQuestion(),
+            faq.getAnswer(),
+            faq.getUserId()
+        );
+        FaqDocument saved = faqMongoRepository.save(doc);
+        return toFaq(saved);
     }
 
-    @Override
-    public Faq save(Faq faq) {
-        FaqDocument fd = new FaqDocument();
-        fd.setId(faq.getId() == null ? null : String.valueOf(faq.getId()));
-        fd.setQuestion(faq.getQuestion());
-        fd.setAnswer(faq.getAnswer());
-        fd.setUserId(String.valueOf(faq.getUserId()));
-        FaqDocument saved = faqMongoRepository.save(fd);
-        faq.setId(Long.parseLong(saved.getId()));
+    private Faq toFaq(FaqDocument doc) {
+        Faq faq = new Faq();
+        faq.setId(doc.getId());
+        faq.setQuestion(doc.getQuestion());
+        faq.setAnswer(doc.getAnswer());
+        faq.setUserId(doc.getUserId());
         return faq;
     }
 
-    @Override
-    public void deleteById(Long id) {
-        faqMongoRepository.deleteById(String.valueOf(id));
+    private Long getNextId() {
+        Optional<Long> maxId = faqMongoRepository.findAll()
+            .stream()
+            .map(FaqDocument::getId)
+            .max(Comparator.naturalOrder());
+        return maxId.map(id -> id + 1).orElse(1L);
     }
 }

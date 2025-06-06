@@ -4,10 +4,10 @@ import com.example.game.model.Location;
 import com.example.game.mongo.model.LocationDocument;
 import com.example.game.mongo.repository.LocationMongoRepository;
 import com.example.game.service.interfaces.ILocationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,38 +18,28 @@ public class LocationService implements ILocationService {
 
     private final LocationMongoRepository locationMongoRepository;
 
-    @Autowired
     public LocationService(LocationMongoRepository locationMongoRepository) {
         this.locationMongoRepository = locationMongoRepository;
     }
 
     @Override
-    public List<Location> findAll() {
-        return locationMongoRepository.findAll()
-            .stream()
-            .map(ld -> {
-                Location loc = new Location();
-                loc.setId(Long.parseLong(ld.getId()));
-                loc.setName(ld.getName());
-                loc.setLat(ld.getLat());
-                loc.setLng(ld.getLng());
-                return loc;
-            })
-            .collect(Collectors.toList());
+    public List<String> getDistinctLocationNames() {
+        return locationMongoRepository.findDistinctNames();
     }
 
     @Override
-    public Optional<Location> findByName(String name) {
-        return locationMongoRepository.findByName(name)
-            .stream()
-            .findFirst()
-            .map(ld -> {
-                Location loc = new Location();
-                loc.setId(Long.parseLong(ld.getId()));
-                loc.setName(ld.getName());
-                loc.setLat(ld.getLat());
-                loc.setLng(ld.getLng());
-                return loc;
-            });
+    public List<Location> getAllLocations() {
+        return locationMongoRepository.findAll().stream()
+            .map(this::toLocation)
+            .collect(Collectors.toList());
+    }
+
+    private Location toLocation(LocationDocument doc) {
+        Location location = new Location();
+        location.setId(doc.getId());
+        location.setName(doc.getName());
+        location.setLat(doc.getLat());
+        location.setLng(doc.getLng());
+        return location;
     }
 }

@@ -5,22 +5,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "game_errors")
 public class GameErrorDocument {
+
     @Id
-    private String id;
+    private Long id;
+
     private String name;
 
-    public GameErrorDocument() {}
+    public GameErrorDocument() {
+    }
 
-    public GameErrorDocument(String id, String name) {
+    public GameErrorDocument(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

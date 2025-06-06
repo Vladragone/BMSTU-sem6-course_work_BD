@@ -5,28 +5,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "game_session")
 public class GameSessionDocument {
+
     @Id
-    private String id;
-    private String userId;
+    private Long id;
+
+    private Long userId;
     private Double userLat;
     private Double userLng;
     private Double correctLat;
     private Double correctLng;
     private Integer earnedScore;
-    private String errorId;
 
-    public GameSessionDocument() {}
+    public GameSessionDocument() {
+    }
 
-    public GameSessionDocument(
-        String id,
-        String userId,
-        Double userLat,
-        Double userLng,
-        Double correctLat,
-        Double correctLng,
-        Integer earnedScore,
-        String errorId
-    ) {
+    public GameSessionDocument(Long id,
+                               Long userId,
+                               Double userLat,
+                               Double userLng,
+                               Double correctLat,
+                               Double correctLng,
+                               Integer earnedScore) {
         this.id = id;
         this.userId = userId;
         this.userLat = userLat;
@@ -34,22 +33,21 @@ public class GameSessionDocument {
         this.correctLat = correctLat;
         this.correctLng = correctLng;
         this.earnedScore = earnedScore;
-        this.errorId = errorId;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -91,13 +89,5 @@ public class GameSessionDocument {
 
     public void setEarnedScore(Integer earnedScore) {
         this.earnedScore = earnedScore;
-    }
-
-    public String getErrorId() {
-        return errorId;
-    }
-
-    public void setErrorId(String errorId) {
-        this.errorId = errorId;
     }
 }

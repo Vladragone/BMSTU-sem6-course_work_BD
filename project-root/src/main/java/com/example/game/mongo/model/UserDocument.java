@@ -5,16 +5,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
 public class UserDocument {
+
     @Id
-    private String id;
+    private Long id;
+
     private String username;
     private String email;
     private String password;
-    private String role;
+    private String role = "user";
 
-    public UserDocument() {}
+    public UserDocument() {
+    }
 
-    public UserDocument(String id, String username, String email, String password, String role) {
+    public UserDocument(Long id, String username, String email, String password, String role) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -22,11 +25,11 @@ public class UserDocument {
         this.role = role;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

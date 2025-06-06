@@ -7,35 +7,48 @@ import java.time.LocalDateTime;
 
 @Document(collection = "profile")
 public class ProfileDocument {
+
     @Id
-    private String id;
-    private String userId;
+    private Long id;
+
+    private Long userId;
+    private int score;
     private LocalDateTime regDate;
     private int gameNum;
 
-    public ProfileDocument() {}
+    public ProfileDocument() {
+    }
 
-    public ProfileDocument(String id, String userId, LocalDateTime regDate, int gameNum) {
+    public ProfileDocument(Long id, Long userId, LocalDateTime regDate) {
         this.id = id;
         this.userId = userId;
         this.regDate = regDate;
-        this.gameNum = gameNum;
+        this.score = 0;
+        this.gameNum = 0;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public LocalDateTime getRegDate() {

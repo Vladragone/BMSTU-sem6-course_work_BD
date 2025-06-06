@@ -5,45 +5,40 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "feedback")
 public class FeedbackDocument {
+
     @Id
-    private String id;
-    private String userId;
-    private String description;
+    private Long id;
+
+    private Long userId;
     private Integer rating;
     private String problem;
+    private String description;
 
-    public FeedbackDocument() {}
-
-    public FeedbackDocument(String id, String userId, String description, Integer rating, String problem) {
-        this.id = id;
-        this.userId = userId;
-        this.description = description;
-        this.rating = rating;
-        this.problem = problem;
+    public FeedbackDocument() {
     }
 
-    public String getId() {
+    public FeedbackDocument(Long id, Long userId, Integer rating, String problem, String description) {
+        this.id = id;
+        this.userId = userId;
+        this.rating = rating;
+        this.problem = problem;
+        this.description = description;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Integer getRating() {
@@ -60,5 +55,13 @@ public class FeedbackDocument {
 
     public void setProblem(String problem) {
         this.problem = problem;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
